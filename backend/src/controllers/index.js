@@ -1,0 +1,1 @@
+export {default as RecipesController} from "./RecipesController.js"

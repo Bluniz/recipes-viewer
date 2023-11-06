@@ -1,0 +1,1 @@
+export {default as RecipeRoutes} from "./recipeRoutes.js"
