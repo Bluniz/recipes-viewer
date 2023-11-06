@@ -1,18 +1,16 @@
+import { Query } from '../database/index.js';
 
-import {Query} from "../database/index.js"
+export default {
+  async findAll(orderBy) {
+    const order = ['desc', 'DESC'].includes(orderBy) ? 'DESC' : 'ASC';
+    const rows = await Query(`SELECT * from recipes ORDER BY name ${order}`);
 
-export default  {
-  async findAll(){
-    const rows = await Query('SELECT * from recipes');
-
-    return rows
+    return rows;
   },
 
-  async findById(id){
-    const row = await Query(`SELECT * from recipes where id=$1`, [id])
+  async findById(id) {
+    const row = await Query(`SELECT * from recipes where id=$1`, [id]);
 
-    return row
-  }
-
-}
-
+    return row;
+  },
+};

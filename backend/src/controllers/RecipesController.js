@@ -2,8 +2,10 @@ import { RecipesRepository } from '../repository/index.js';
 
 const RecipesController = {
   async findAll(req, res, next) {
+    const { orderBy = 'ASC' } = req.query;
+
     try {
-      const recipes = await RecipesRepository.findAll();
+      const recipes = await RecipesRepository.findAll(orderBy);
 
       return res.status(200).json({
         recipes,
