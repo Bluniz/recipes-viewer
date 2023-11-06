@@ -7,9 +7,8 @@ import { getAllRecipes } from '../../services/RecipesService';
 import { useDebounceEffect, useError, useIsLoading } from '../../hooks';
 
 import ErrorImg from '../../assets/cancel.svg';
+import { Loader, RecipeList } from '../../components';
 import * as S from './styles';
-import { Loader } from '../../components/Loader';
-import { RecipeList } from '../../components/RecipeList';
 
 export const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
