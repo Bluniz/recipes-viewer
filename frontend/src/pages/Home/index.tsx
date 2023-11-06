@@ -1,4 +1,5 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, ChangeEvent, startTransition } from 'react';
 import { AxiosError } from 'axios';
 
 import { Recipe } from '../../utils/types/recipes';
@@ -10,10 +11,15 @@ import ErrorImg from '../../assets/cancel.svg';
 import { Loader, RecipeList } from '../../components';
 import * as S from './styles';
 
+import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
+
+const isFirstRender = true;
+
 export const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [searchText, setSearchText] = useState('');
+  const [orderBy, setOrderBy] = useState<'ASC' | 'DESC'>('ASC');
 
   const { isLoading, handleStartLoading, handleFinishLoading } =
     useIsLoading(true);
@@ -29,6 +35,8 @@ export const Home = () => {
   const filterRecipes = () => {
     if (!searchText) return setFilteredRecipes(recipes);
 
+    console.log(recipes);
+
     const filterList = recipes.filter((recipe) =>
       recipe.ingredients.includes(searchText)
     );
@@ -36,16 +44,18 @@ export const Home = () => {
     setFilteredRecipes(filterList);
   };
 
-  const loadRecipes = async (signal: AbortSignal) => {
+  const loadRecipes = async (signal: AbortSignal, order: 'ASC' | 'DESC') => {
     try {
       handleStartLoading();
       handleSetHasNotError();
       handleSetErrorMessage('');
 
-      const result = await getAllRecipes(signal);
+      const result = await getAllRecipes(signal, order);
 
       setRecipes(result.data.recipes);
       setFilteredRecipes(result.data.recipes);
+
+      return result.data.recipes;
     } catch (error) {
       const err = error as AxiosError;
       if (
@@ -71,14 +81,16 @@ export const Home = () => {
   useEffect(() => {
     const Controller = new AbortController();
 
-    loadRecipes(Controller.signal);
+    (async () => {
+      startTransition(await loadRecipes(Controller.signal, orderBy));
+      filterRecipes();
+    })();
 
     return () => {
       Controller.abort();
       handleStartLoading();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [orderBy]);
 
   useDebounceEffect(
     () => {
@@ -105,6 +117,23 @@ export const Home = () => {
         value={searchText}
         onChange={handleChangeSearchText}
       />
+      <S.OrderByContainer>
+        <S.OrderByButton
+          selected={orderBy === 'ASC'}
+          onClick={() => setOrderBy('ASC')}
+        >
+          <ArrowUp />
+        </S.OrderByButton>
+        <S.OrderByButton
+          selected={orderBy === 'DESC'}
+          onClick={() => {
+            setOrderBy('DESC');
+            setSearchText('');
+          }}
+        >
+          <ArrowDown />
+        </S.OrderByButton>
+      </S.OrderByContainer>
       <S.RecipesContainer>
         {hasError ? (
           <S.ErrorContainer>

@@ -14,8 +14,7 @@ export const RecipeList = ({
       {recipes.length === 0 && !isLoading && (
         <S.NoDataContainer>
           <img src={NoDataImg} alt='no-data-image' />
-          <h3>Favorites not found!</h3>
-          <p>Favorite one recipe to see in this</p>
+          <h3>Recipes not found!</h3>
         </S.NoDataContainer>
       )}
 
