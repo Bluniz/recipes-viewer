@@ -1,7 +1,7 @@
 import { Star } from '@phosphor-icons/react';
 import * as S from './styled';
 import { FavoriteButtonProps } from './types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   addFavoriteRecipe,
   getFavoriteRecipes,
@@ -14,7 +14,7 @@ export const FavoriteButton = ({
 }: FavoriteButtonProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const verifyIsFavorited = async () => {
+  const verifyIsFavorited = useCallback(async () => {
     const storageFavoriteRecipes = getFavoriteRecipes();
 
     if (recipe) {
@@ -26,7 +26,7 @@ export const FavoriteButton = ({
         setIsFavorited(true);
       }
     }
-  };
+  }, [recipe]);
 
   const handleFavorite = () => {
     if (isFavorited) {
@@ -42,8 +42,7 @@ export const FavoriteButton = ({
 
   useEffect(() => {
     verifyIsFavorited();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [verifyIsFavorited]);
 
   return (
     <S.FavoriteButtonContainer onClick={handleFavorite}>
